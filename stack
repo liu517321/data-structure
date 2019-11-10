@@ -1,0 +1,112 @@
+#include<iostream>
+#include<stdlib.h>
+#define MAXSIZE 20
+using namespace std;
+typedef int status;
+typedef char ElemType;
+typedef struct
+{
+	ElemType*base;
+	ElemType *top;
+	int stacksize;
+}Sqstack;
+//初始化
+status InitStack(Sqstack &s)
+{
+	s.base=new ElemType[MAXSIZE];
+	if(s.base==NULL)
+	{
+		exit(1);
+	}
+	s.top=s.base;
+	s.stacksize=MAXSIZE;
+	return 1;
+}
+//构造顺序栈
+void  Create(Sqstack &s)
+ {
+	int n=0;
+	cout << "请输入要插入元素个数：" << endl;
+	cin >> n;
+	cout << "请输入要入栈的元素：" << endl;
+	for (int j = 0; j < n; j++)
+	{
+		cin >> *s.top++;
+	}
+}
+//入栈
+status Push(Sqstack &s, ElemType e) 
+{
+	
+	if (s.top - s.base == MAXSIZE) 
+	{
+		cout << "栈已满！无法插入" << endl;
+	}
+	   *s.top++ = e;
+	return 0;
+}
+//出栈
+status Pop(Sqstack &s, ElemType e) 
+{
+	if (s.top==s.base) 
+	{
+		cout << "栈为空！" << endl;
+	}
+		e = *--s.top;
+		cout << e<<"  ";
+	cout<<endl;
+	return 0;
+}
+//获取栈顶元素
+void GetPop(Sqstack &s) 
+{
+	if(s.top!=s.base)
+	{
+		cout<<*(s.top - 1);
+	}
+}
+//打印栈内元素
+void Display(Sqstack s) 
+{
+	int e = 0;
+	while(s.top != s.base) 
+	{
+		cout << *--s.top<<"  ";
+	}
+}
+//判断是否为空
+void IsEmpty(Sqstack &s) 
+{
+	if (s.top == s.base) 
+	{
+		cout << "栈为空！" << endl;
+		
+	}
+	else
+	{
+		cout << "栈不为空！" << endl;
+	}
+}
+int main()
+{
+	ElemType e=0;
+	Sqstack s;
+	
+	InitStack(s);
+	IsEmpty(s);
+	Create(s);
+	Display(s);
+	cout << endl;
+    cout<<"要插入的数据元素:\n";
+	cin>>e;
+	Push(s,e);
+	Display(s);
+	cout << endl;
+	IsEmpty(s);
+	cout << "获取栈顶元素：" << endl;
+	GetPop(s);
+	cout <<endl;
+	cout << "出栈：" <<" ";
+	Pop(s, e);
+	return 0;
+}
