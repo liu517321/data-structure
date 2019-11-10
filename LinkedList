@@ -1,0 +1,133 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include<iostream>
+using namespace std;
+#define OK 1
+#define ERROR 0
+#define OVERFLOW -2
+#define MAXSIZE 100
+typedef int status;
+typedef int ElemType;  //可以自行设置ElemType的类型
+
+//链表类的定义
+typedef struct Node {
+	ElemType data;
+	struct Node *next;
+}LNode,*LinkList;
+status InitList1(LinkList &L) {
+	L = new Node;
+	L->next = NULL;
+	cout << "请输入你所需要的链表长度：\n";
+	int n;
+	cin >> n;
+	cout << "请依次输入链表每个节点所对应的值：\n";
+	for (int j = 0; j < n; j++) {
+		LinkList s = new Node;
+		cin >> s->data; 
+		//头插法
+		s->next = L->next;
+		L->next = s;
+	}
+	return OK;
+}
+status InsertList(LinkList &L,int i,ElemType m){
+	LinkList p;
+	p = L;
+	int j = 0;
+	if (i < 0) 
+		cout << "下标错误";
+	while (p&&(j<=i-1)) {
+		p = p->next;
+		j++;
+	}
+	if (!p)
+		cout << "下标错误";
+	else {
+		LinkList s = new Node;
+		s->data = m;
+		s->next = p->next;
+		p->next = s;
+	}
+	return OK;
+}
+status isEmpty(LinkList &L) {
+	LinkList p;
+	p = L->next;
+	if (p != NULL) {
+		cout << "\n链表不为空\n";
+	}
+	else
+		cout << "\n链表为空\n";
+	return OK;
+}
+//按序号取值,m返回的i个元素的值
+status Getelem(LinkList &L, int i) {
+	ElemType m;
+	LinkList p;
+	p = L;
+	for (int j = 0; j < i; j++) {
+		p = p->next;
+	}
+	m = p->data;
+	return m;
+}
+//按值查找，找出元素值等于m的元素，并返回其下标
+status FindElem(LinkList &L, ElemType m) {
+	LinkList p;
+	p = L->next;
+	int j = 1;
+	while (p&&p->data != m) {
+		p = p->next;
+		++j;
+	}
+	if (p = NULL) {
+		cout << "找不到";
+	}
+	return j ;
+}
+//删除
+status DeleLink(LinkList &L, int i) {
+	LinkList pl = L;
+	int j = 0;
+	while (pl->next&&j<i-1) {
+		pl = pl->next;
+	    ++j;
+	}
+	
+	if (pl->next == NULL||j>i-1)
+		cout << "下标出错";
+	LinkList s = pl->next;
+	pl->next = s->next;
+	free(s);
+	return OK;
+}
+//输出
+
+status PrintList(LinkList &L) {
+	LinkList pl = L->next;
+	while (pl != NULL) {
+		cout << pl->data<<"  ";
+		pl = pl->next;
+	}
+	cout<<endl;
+	return OK;
+}
+int main() {
+	LinkList L;
+	InitList1(L);
+	cout << "构造后的链表:"<<endl;
+	PrintList(L);
+	InsertList(L, 3, 9);
+	cout << "在下标3处插入元素9之后的链表："<<endl;
+	PrintList(L);
+	isEmpty(L);
+	cout << "\n第2个位置的元素值为："<<endl;
+	int l=Getelem(L, 2);
+	cout << l;
+	cout << "\n元素值等于4的元素位置："<<endl;
+	int k=FindElem(L, 4);
+	cout << k;
+	cout << "\n删除第3个元素之后的链表："<<endl;
+    DeleLink(L, 3);
+	PrintList(L);
+}
