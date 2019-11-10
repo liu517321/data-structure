@@ -1,0 +1,311 @@
+#include<iostream>
+#include<string.h>
+using namespace std;
+typedef struct ElemType
+{
+	int number;
+	char name[20];
+	double score;
+ 
+}ElemType;
+typedef struct Node                                  //钩造链表结构体
+{
+	ElemType data;                                   //数据域
+	struct Node *next;                               //指针域
+ 
+}LNode,*LinkList;
+
+void CreatList(LinkList &L)                         //创建链表L
+{
+	int i,n,temp;
+	char str[20];
+	double temp2;
+	printf("请输入录入学生的个数:");
+	scanf("%d",&n);
+	L=new LNode;
+	LinkList r,p,q;
+	L->next=NULL;
+	r=L;
+	for(i=0;i<n;i++)
+	{
+		p=new LNode;
+		printf("学号:");
+		scanf("%d",&p->data.number);
+		printf("姓名:");
+		scanf("%s",&p->data.name);
+		printf("分数:");
+		scanf("%lf",&p->data.score);
+		p->next=NULL;
+		r->next=p;
+		r=p;
+		printf("\n");
+	}
+	p=L->next;                                     //链表排序
+	while(p)
+	{
+		q=p;
+		q=q->next;
+		while(q)
+		{
+			if(p->data.number > q->data.number)
+			{
+				temp=p->data.number;
+				p->data.number=q->data.number;
+				q->data.number=temp;
+				strcpy(str,p->data.name);
+				strcpy(p->data.name,q->data.name);
+				strcpy(q->data.name,str);
+				temp2=p->data.score;
+				p->data.score=q->data.score;
+				q->data.score=temp2;
+				
+			}
+			q=q->next;
+		}
+		p=p->next;
+	}
+	printf("完成录入!\n");
+}
+
+void DispList(LinkList &L)                          //输出链表
+{
+	LinkList p;
+	p=L->next;
+	if(!p)
+	{
+		printf("链表为空!\n");
+	}
+	else
+	{
+		while(p)
+		{
+			printf("学号:%d    ",p->data.number);
+			printf("姓名:%s    ",p->data.name);
+			printf("分数:%.3f",p->data.score);
+			p=p->next;
+			printf("\n");
+		}
+	}
+}
+
+
+void Panduan(LinkList L)                            //判断链表L是否为空
+{
+	LinkList p;
+	p=L->next;
+	if(!p)
+	{
+		printf("链表为空!\n");
+	}
+	else
+	{
+		printf("链表有值!\n");
+	}
+}
+
+
+void LocateList(LinkList L,ElemType e)              //通过学生姓名查找学生信息
+{
+	LinkList p;
+	p=L->next;
+	if(!p)
+	{
+		printf("链表为空!\n");
+	}
+	else
+	{
+		while(p)
+		{
+			if(strcmp(p->data.name,e.name)==0)
+			{
+				printf("该同学姓名:%d    ",p->data.number);
+		        printf("分数:%.3f",p->data.score);
+				break;
+			}
+			p=p->next;
+		}
+		if(p==NULL) printf("未查找到!\n");
+		printf("\n");
+		
+	}
+}
+
+
+void LockList(LinkList L,int i)                     //通过位置查找学生信息
+{
+	LinkList p;
+	p=L->next;
+    int j=0;
+	if(!p)
+	{
+		printf("链表为空!\n");
+	}
+	else
+	{
+		while(p && j<i-1)
+		{
+			p=p->next;
+			j++;
+		}
+		if(p==NULL || j>i)  
+		{
+			printf("未查找到!");
+			return;
+		}
+		printf("学号:%d    ",p->data.number);
+		printf("姓名:%s    ",p->data.name);
+		printf("分数:%.3f",p->data.score);
+		printf("\n");
+	}
+}
+
+
+
+void Charu(LinkList &L,ElemType e,int i)            //将一位学生的信息插入表中指定位置
+{
+	LinkList p,q;
+	p=L->next;
+    int j=0;
+	
+	if(!p)
+	{
+		printf("链表为空!\n");
+	}
+	else
+	{
+		while(p && j<i-2)
+		{
+			p=p->next;
+			j++;
+		}
+		q=new LNode;
+		q->data.number=e.number;
+		strcpy(q->data.name,e.name);
+		q->data.score=e.score;
+		q->next=p->next;
+		p->next=q;
+		printf("插入成功!\n");
+	}
+}
+
+
+
+void DeleteList(LinkList &L,int i)                  //删除指定位置的学生信息
+{
+	LinkList p;
+	p=L;
+    int j=0;
+	if(!p)
+	{
+		printf("链表为空!\n");
+	}
+	else
+	{
+		while(p->next && j<i-1)
+		{
+			p=p->next;
+			j++;
+		}
+		p->next=p->next->next;
+		printf("删除成功!\n");
+	}
+}
+
+
+void LengthList(LinkList L)                         //求链表L中学生的个数
+{
+	LinkList p;
+	p=L->next;
+	int j=0;
+	if(!p)
+	{
+		printf("链表为空!\n");
+	}
+	else
+	{
+		while(p)
+		{
+			j++;
+			p=p->next;
+		}
+		printf("学生的个数:%d\n",j);
+	}
+}
+
+
+void print()                                        //打印目录函数
+{
+	printf("*****************************************\n");
+	printf("***  1.请按顺序输入n个学生的信息     ****\n");
+	printf("***  2.显示所有学生的信息            ****\n");
+	printf("***  3.判断该表是否为空表            ****\n");
+	printf("***  4.输入学生姓名，查找该学生的信息****\n");
+	printf("***  5.输入位置，显示该学生信息      ****\n");
+	printf("***  6.添加学生信息                  ****\n");
+	printf("***  7.删除学生信息                  ****\n");
+	printf("***  8.计算学生个数                  ****\n");
+	printf("***  0.输出选项                      ****\n");
+	printf("*****************************************\n");
+ 
+}
+
+
+
+int main()
+{
+	int i,op;
+	char str[20];
+	ElemType e;
+    LinkList L;
+	print();
+	while(1)
+	{	
+		scanf("%d",&op);
+		switch(op)
+		{
+		case 1:
+			CreatList(L);
+			break;
+		case 2:
+			DispList(L);
+			break;
+		case 3:
+			Panduan(L);
+			break;
+		case 4:
+			printf("请输入要查找的学生姓名:");
+			scanf("%s",&e.name);
+			LocateList(L,e);
+			break;
+		case 5:printf("请输入所指定的位置:");
+			scanf("%d",&i);
+			LockList(L,i);
+			break;
+		case 6:
+			printf("请输入该同学学号:");
+			scanf("%d",&e.number);
+			printf("请输入该同学姓名:");
+			scanf("%s",&e.name);
+			printf("请输入该同学分数:");
+			scanf("%lf",&e.score);
+            printf("请输入插入位置:");
+			scanf("%d",&i);
+			Charu(L,e,i);
+			break;
+		case 7:printf("请输入所需删除同学的位置:");
+			scanf("%d",&i);	
+			DeleteList(L,i);
+			break;
+		case 8:
+			LengthList(L);
+			break;
+		case 0:
+            print();
+			break;
+
+		default:
+			break;
+		}
+	}
+	return 0;
+}
