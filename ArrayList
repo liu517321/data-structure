@@ -1,0 +1,174 @@
+#include<iostream>
+using namespace std;
+#define MAXSIZE 100
+#define ERROR 0
+#define OK 1
+typedef int ElemType;
+typedef struct
+{
+	ElemType *elem;
+	int last;
+}SqList;
+//取表中第i个元素
+int GetElem( SqList *L, int i, ElemType &e)
+{
+	if (i<1 || i>L->last) return 0;
+	e = L->elem[i - 1];
+	return e;
+}
+//查找元素的序号
+int  Locate(SqList *L, ElemType e)
+{
+	int i=0;        
+	while ((i<=L->last)&&(L->elem[i]!=e))
+		i++;
+	if  (i<=L->last)
+		return(i+1);  
+	else
+		return(-1);  
+}
+
+int  InsList(SqList *L,int i,ElemType e)
+{
+	int k;
+	if((i<1) || (i>L->last+2)) 
+	{
+		printf("插入位置i值不合法");
+		return(ERROR);
+	}
+	if(L->last>= MAXSIZE-1)
+	{
+		printf("表已满无法插入");
+		return(ERROR);
+	}
+	for(k=L->last;k>=i-1;k--)   
+		L->elem[k+1]=L->elem[k];
+	L->elem[i-1]=e;   
+	L->last++;
+	return(OK);
+}
+
+int  DelList(SqList *L,int i)
+
+{
+	int k;
+	if((i<1)||(i>L->last+1))
+	{
+		printf("删除位置不合法!");
+		return(ERROR);
+	}
+	for(k=i; k<=L->last; k++)
+		L->elem[k-1] = L->elem[k]; 
+	
+	L->last--;
+	return(OK);
+}
+void print(SqList L)//打印
+{
+	int i;
+	for(i=0;i<=L.last;i++)
+		cout<<L.elem[i]<<"  ";
+	cout<<endl;
+}
+void Init(SqList *L)//初始化
+{
+	L->elem=new ElemType[MAXSIZE];
+	if(! L->elem) {  
+		exit(0);  
+	}  
+	int n,i=0;
+	cout<<"请输入顺序表元素个数"<<endl;
+	cin>>n;
+	while(i<n)
+	{
+		cin>>L->elem[i++];
+	}
+	L->last=i-1;
+}
+
+void merge(SqList *LA,  SqList *LB,  SqList *LC)//合并
+{
+	int i,j,k;
+	i=0;j=0;k=0;
+	while(i<=LA->last&&j<=LB->last)
+		if(LA->elem[i]<=LB->elem[j])
+		{
+			LC->elem[k]= LA->elem[i];
+			i++; 
+			k++;
+		}
+		else
+		{
+			LC->elem[k]=LB->elem[j];
+			j++; 
+			k++;
+		}
+		while(i<=LA->last)
+		{
+			LC->elem[k]= LA->elem[i];
+			i++; 
+			k++;
+		}
+		while(j<=LB->last)  
+		{
+			LC->elem[k]= LB->elem[j];
+			j++; 
+			k++;
+		}
+		LC->last=LA->last+LB->last+1;
+}
+
+int IsEmpty(SqList *L)
+{
+if (L->last == 0)
+	{
+		printf("\n该线性表为空！\n");
+		return 1;
+	}
+	else
+	{
+			printf("\n该线性表不为空！\n");
+           return 0;
+	}
+}
+int main()
+{
+	SqList L,L1,L2;
+	int e;
+	int t;
+	cout<<"初始化顺序表："<<endl;
+	//初始化
+	Init(&L);
+    cout<<"输出顺序表为："<<endl;
+	print(L);
+	//查找
+    int m=Locate(&L, 5);
+	cout<<"元素5的序号为"<<m<<endl;
+	//取对应元素
+	cout<<"第三个元素为："<<endl;
+	cout<<GetElem(&L,3,e)<<endl;
+	//指定位置插入数字
+	cout<<"在位置二处插入数字9后输出顺序表为："<<endl;
+    InsList(&L,2,9);
+    print(L);
+    IsEmpty(&L);
+	print(L);
+	//删除
+    cout<<"删除第4个数据元素："<<endl;
+	t=DelList(&L,4);
+	if(t)
+	{
+		cout<<"删除后的顺序表为"<<endl;
+		print(L);
+	}
+	else
+		cout<<"删除失败！"<<endl;
+
+	cout<<"对L1、L2进行初始化操作："<<endl;
+	Init(&L1);
+	Init(&L2);
+	cout<<"L1,L2,L合并后为:"<<endl;
+	merge(&L1,&L2,&L);
+	print(L);
+	return 0;
+}
