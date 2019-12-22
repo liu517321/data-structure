@@ -1,0 +1,181 @@
+Queue.h
+typedef enum status{ERROR,OK}; 
+//定义循环顺序队列结构 
+#define MAXQSIZE 100 //最大长度 
+typedef int QElemType; 
+typedef struct{ 
+QElemType *base; //初始化动态分配存储空间 
+int front; //头指针 
+int rear; //尾指针 
+}SqQueue; 
+//循环队列的初始化 
+status InitQueue (SqQueue &Q){ 
+Q.base =new QElemType[MAXQSIZE]; 
+if(!Q.base) exit(OVERFLOW); 
+Q.front=Q.rear=0; 
+return OK; 
+}
+//循环队列判空函数 
+int QueueEmpty(SqQueue Q) 
+{ 
+if(Q.front=Q.rear) 
+return 1; 
+else 
+return 0; 
+}
+//循环队列入队 
+status EnQueue(SqQueue &Q,QElemType e) 
+{ 
+if((Q.rear+1)%MAXQSIZE==Q.front) 
+return ERROR; 
+Q.base[Q.rear]=e; 
+Q.rear=(Q.rear+1)%MAXQSIZE; 
+return OK; 
+}
+//循环队列出队 
+status DeQueue(SqQueue &Q,QElemType &e) 
+{ 
+if(QueueEmpty(Q)) 
+return ERROR;//队空? 
+e=Q.base[Q.front];Q.front=(Q.front+1)%MAXQSIZE; 
+return OK; 
+}
+
+Graph.h
+#include <iostream> 
+#include "Queue.h" 
+#define MaxInt 32767 
+#define MvNum 100 
+//#define int status 
+typedef char VerTexType; //顶点值类型 
+typedef int ArcType; //边的权值类型 
+using namespace std; 
+//图的邻接矩阵 
+typedef struct{ 
+VerTexType vexs[MvNum]; 
+ArcType arcs[MvNum][MvNum]; 
+int vexnum,arcnum; 
+}AMGraph; 
+//最小生成树创建过程中辅助数组 
+struct{
+VerTexType adjvex; // 最小边在 U 中的顶点 
+ArcType lowcost; // 边的权值 
+}closedge[MvNum]; 
+//顶点的定位 
+int LocateVex(AMGraph G,VerTexType u) 
+{//存在则返回 u 在顶点表中的下标，否则返回-1 
+int i; 
+for(i=0;i<G.vexnum;++i) 
+if(u==G.vexs[i]) 
+return i; 
+return -1; 
+}
+//创建无向网的邻接矩阵 
+status CreateUDN(AMGraph &G) 
+{ 
+int i,j;VerTexType v1,v2; 
+ArcType w; 
+cout<<"请输入图的顶点个数和边的个数：\n"; 
+cin >> G.vexnum >> G.arcnum; //图的顶点的个数和边的数目 
+cout<<"请输入图的顶点：\n"; 
+for(i=0;i<G.vexnum;i++) 
+cin>>G.vexs[i]; //输入顶点的值 
+for(i=0;i<G.vexnum;i++) 
+for(j=0;j<G.vexnum;j++) 
+G.arcs[i][j]=MaxInt; //邻接矩阵的初始化 
+cout<<"请输入图的边及权值：\n"; 
+for(int k=0;k<G.arcnum;k++) //输入 G.arcnum 条边 
+{ 
+cin>>v1>>v2>>w; 
+i= LocateVex(G,v1); 
+j= LocateVex(G,v2); 
+G.arcs[i][j] = w; 
+G.arcs[j][i] = w; 
+}
+return OK; 
+}
+//图的深度优先遍历算法 
+int visited[MvNum]; 
+void DFS_AM(AMGraph G, int v0) 
+{ 
+int w; 
+cout << v0<<" "; 
+visited[v0] = 1; 
+for(w=0; w<G.vexnum; w++) 
+if((G.arcs[v0][w]!= MaxInt) && (!visited[w])) 
+DFS_AM(G,w); 
+}
+//图的广度优先搜索遍括历算法 bFS，用邻接矩阵表示 
+void bfs_AM(AMGraph G,int v0) 
+{ 
+int v,w,u; 
+int visited[MvNum]={0}; 
+SqQueue Q; //队列 
+cout<<endl<<v0<<" "; visited[v0]=1; /*访问 v0 顶点并设置其访问标志为 1*/ 
+InitQueue(Q); //队列初始化 
+EnQueue(Q, v0); //入队
+while(!QueueEmpty(Q)) /*队列不为空?*/ 
+{ 
+DeQueue(Q,u); /*出队*/ 
+for(w=0;w<G.vexnum; w++) 
+{ 
+if(!visited[w] && G.arcs[u][w]!= MaxInt) 
+{ 
+cout<<w<<" "; 
+EnQueue(Q,w); 
+visited[w]=1; 
+} 
+}//end for 
+} /*队列 循环*/ 
+cout<<endl; 
+} /*函数结束?*/ 
+//最小生成树的创建，用 prim 算法 
+void MiniSpanTree_Prim(AMGraph G, VerTexType u ) 
+{ 
+int i,j,k,e,k0,minicost; 
+VerTexType u0,v0; 
+k=LocateVex(G,u); 
+for (i=0; i<G.vexnum; ++i) //辅助数组初始化 
+if (i!=k) 
+{ 
+closedge[i].adjvex = u; 
+closedge[i].lowcost = G.arcs[k][i]; 
+} 
+closedge[k].lowcost=0; // 起始点并入 U={u} 
+for(e=1; e< G.vexnum; ++e) 
+{ 
+minicost = 32767; 
+k0=0; 
+for (j=0; j<G.vexnum; j++) 
+if (closedge[j].lowcost !=0 && closedge[j].lowcost < minicost ) 
+{ k0 = j; minicost = closedge[j].lowcost; } 
+u0 = closedge[k0].adjvex; 
+v0 = G.vexs[k0]; 
+printf("%c,%c\n", u0,v0); // 输出生成树的边 closedge[k0].lowcost=0; //第 0 顶点并入 U 
+for (j=0; j<G.vexnum; ++j) // 重新选择最小边
+if(G.arcs[k0][j]< closedge[j].lowcost) 
+{ 
+closedge[j].adjvex = v0; 
+closedge[i].lowcost = G.arcs[k0][j]; 
+} 
+} 
+}
+
+Graph.cpp
+#include "stdafx.h" 
+#include "graph.h" 
+int _tmain(int argc, _TCHAR* argv[]) 
+{ 
+int n,i; 
+AMGraph G; 
+CreateUDN(G); 
+printf("深度优先遍括历：\n"); 
+printf("请输入起始顶点 n：") ; 
+cin >> n; 
+DFS_AM(G,n); 
+printf("\n 广度优先搜索遍历：\n"); 
+bfs_AM(G,n); 
+printf("最小生成树为：\n"); 
+MiniSpanTree_Prim( G,n); 
+return 0; 
+}
